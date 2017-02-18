@@ -21,8 +21,15 @@ Usable debug commands for server admins
 
 ## Others
 
+### Kills Player.
 ```sqf
-// NOTHING YET
+// Kills player, or player(s)
+player setdamage 1
+```
+### Removes all Weapons
+```sqf
+// Removes player, or player(s) Weapons.
+removeAllWeapons player;
 ```
 
 ### Disable fatique (without ACE loaded)
