@@ -3,8 +3,10 @@ Usable debug commands for server admins
 
 ## Object spawning
 
+### Delete Object.
 ```sqf
-// NOTHING YET
+//Will delete any object, or Vechicle your crosshair is at.
+deleteVehicle cursorTarget
 ```
 
 ## Entity spawning
@@ -20,13 +22,38 @@ Usable debug commands for server admins
 // Skip time per hour. "5" = Hours (Server side)
 skipTime 5; 
 ```
+### Remove Fog
+```sqf
+//This will remove the fog from Arma completely, visually nice but will effect performance.
+0 setFog 0; forceWeatherChange; 999999 setFog 0;
+```
 
 ## Others
 
+### Map teleport
+```sqf
+//This will teleport you around the map freely by alt then left clicking.
+player onMapSingleClick "if (_alt) then {player setPosATL _pos}";
+```
+### God Mode
+```sqf
+//You will take damage, however you will not die. 
+player allowdamage false;
+```
+### Upgrade Vechicles Speed
+```sqf
+// Will upgrade the speed of the current or active vechicles. Recommend god mode is on for this.
+hint "Speed upgrade loaded!"; waituntil {!isnull (finddisplay 46)}; (findDisplay 46) displayAddEventHandler ["KeyDown","_this select 1 call MY_KEYDOWN_FNC;false;"]; MY_KEYDOWN_FNC = { _vcl = vehicle player; if(_vcl == player)exitwith{}; _nos = _vcl getvariable "nitro"; _supgrade = _vcl getvariable "supgrade"; if(isEngineOn _vcl) then { switch (_this) do { case 17: { if(isEngineOn _vcl and !isnil "_supgrade") then { _vcl SetVelocity [(velocity _vcl select 0) * 1.011, (velocity _vcl select 1) *1.011, (velocity _vcl select 2) * 0.99]; } else { _vcl setvariable ["supgrade", 1, true]; }; }; case 42: { if(isEngineOn _vcl and !isnil "_nos") then { _vcl setVelocity [(velocity _vcl select 0) * 1.01, (velocity _vcl select 1) * 1.01, (velocity _vcl select 2) * 0.99]; } else { _vcl setvariable ["nitro", 1, true]; }; }; }; }; };
+```
 ### Kills Player.
 ```sqf
 // Kills player, or player(s)
 player setdamage 1
+```
+### Heal Player, or Player(s)
+```sqf
+//Heals yourself, or all players.
+player setDamage 0;
 ```
 ### Removes all Weapons
 ```sqf
@@ -47,8 +74,91 @@ player enableFatigue false;
 // DISABLE AFTER RESPAWN
 player addEventhandler ["Respawn", {player enableFatigue false}];
 ```
+### Repair Vechicle
+```sqf
+//Will repair any Vechicle you're currently in.
+_timeForRepair = 0; _vehicle = vehicle player; hint format ["Please wait %1 seconds for repair/flip",_timeForRepair]; sleep _timeForRepair; if (_vehicle == player) then {_vehicle = cursorTarget;}; _vehicle setfuel 1; _vehicle setdamage 0; _vehicle = nil; vehicle = this select 0; _vehicle setvectorup [0,0,1];
+```
+### Remove Fuel from player, or player(s) vehicles.
+```sqf
+//This will remove all fuel from all active vechicles, or your own.
+vehicle player setfuel 0;
+```
+### Add weapon to player or player(s)
+```sqf
+//This will add weapon via ID to player, or players.
+player addweaponglobal "arifle_MX_GL_F";
+```
+### Set Player Ammo
+```sqf
+//This set current player, or player(s) ammo by adjusting the number.
+player setAmmo [currentWeapon player, 1];
+```
+### See all people on the map
+```sqf
+//Will display ALL players and spawned units on the map.
+if(stealthMarkerToggle == 1) exitWith {stealthMarkerToggle = 0; onEachFrame {}; {deleteMarkerLocal _x;} forEach markerList; hint "Markers disabled";}; stealthMarkerToggle = 1; markerList = []; markerUnits = []; hint "Markers enabled - Check map!"; while {true} do { if(stealthMarkerToggle == 0) exitWith {}; { _unit = _x; markerUnits = markerUnits + [_x]; _markerName = str(format ["%1",name _x]); _mName = "m" + _markerName; //player sidechat format ["%1",_markerName]; if(side _x == side player) then { _mName = createMarkerLocal [_markerName, position _x]; _mName setMarkerSizeLocal [0.6, 0.9]; _mName setMarkerShapeLocal "ICON"; _mName setMarkerTypeLocal "mil_triangle"; _mName setMarkerColorLocal "ColorBlue"; _mName setMarkerTextLocal _markerName; _mName setMarkerDirLocal (direction _x); markerList = markerList + [_mName]; } else { _unit = _x; markerUnits = markerUnits + [_x]; _mName setMarkerSizeLocal [0.6, 0.9]; _mName = createMarkerLocal [_markerName, position _x]; _mName setMarkerShapeLocal "ICON"; _mName setMarkerTypeLocal "mil_triangle"; _mName setMarkerColorLocal "ColorRed"; _mName setMarkerTextLocal _markerName; _mName setMarkerDirLocal (direction _x); markerList = markerList + [_mName]; }; //hint format ["%1",_mName]; } forEach allUnits; sleep 1; if(stealthMarkerToggle == 0) exitWith {}; {_x setMarkerPosLocal getPos (markerUnits select (markerList find _mName)); _x setMarkerDirLocal getDir(markerUnits select (markerList find _mName));} forEach markerList; sleep 1; if(stealthMarkerToggle == 0) exitWith {}; {_x setMarkerPosLocal getPos (markerUnits select (markerList find _mName)); _x setMarkerDirLocal getDir(markerUnits select (markerList find _mName));} forEach markerList; sleep 1; if(stealthMarkerToggle == 0) exitWith {}; {_x setMarkerPosLocal getPos (markerUnits select (markerList find _mName)); _x setMarkerDirLocal getDir(markerUnits select (markerList find _mName));} forEach markerList; sleep 1; if(stealthMarkerToggle == 0) exitWith {}; {_x setMarkerPosLocal getPos (markerUnits select (markerList find _mName)); _x setMarkerDirLocal getDir(markerUnits select (markerList find _mName));} forEach markerList; sleep 1; if(stealthMarkerToggle == 0) exitWith {}; {deleteMarkerLocal _x;} forEach markerList; markerUnits = []; markerList = []; };
+```
+### ESP
+```sqf
+//This will visually show lines to where all players and units are while on foot.
+if (isnil ("WookieESP")) then {WookieESP = 0;}; if (WookieESP==0) then {WookieESP=1;cutText [format["Esp On"], "PLAIN DOWN"];hint "Esp On";}else{WookieESP=0;cutText [format["Esp Off"], "PLAIN DOWN"];hint "Esp Off";}; if (WookieESP==1) then { oneachframe { _nigs = nearestobjects [player,["CAManBase"],1400]; { if((side _x != side player) && (getPlayerUID _x != "") && ((player distance _x) < 1400)) then { drawIcon3D ["", [1,0,0,0.7], GetPosATL _x, 0.1, 0.1, 45, (format ["%2 : %1m",round(player distance _x), name _x]), 1, 0.03, "default"] } else { if((getPlayerUID _x != "") && ((player distance _x) < 1000)) then { drawIcon3D ["", [0,1,0.5,0.4], GetPosATL _x, 0.1, 0.1, 45, (format ["%2 : %1m",round(player distance _x), name _x]), 1, 0.03, "default"] }; }; } foreach playableUnits; _noobs = nearestobjects [player,["CAManBase"],100]; { if(((alive _x)) && ((player distance _x) < 100)) then { if((side _x != side player) && ((player distance _x) < 100)) then { if(player distance _x < 10 && _x iskindof "CAManBase" && side _x != civilian) then { drawLine3D [[getposatl player select 0, getposatl player select 1, getposatl player select 2], _x, [1,0,0,(abs((((player distance _x)) - 100)/100))]] }; } else { drawLine3D [[getposatl player select 0, getposatl player select 1, getposatl player select 2], _x, [0,1,0,(abs((((player distance _x)) - 100)/100))]] }; }; } foreach playableUnits; }; } else { oneachframe {nil}; };
+```
+### Show all Vehicles on the map with markers.
+```sqf
+//This will show ALL spawned Vechicles on the map. (Need testing if it updates in real time)
+if (isnil "ggggggggggggggggggg" ) then {ggggggggggggggggggg=0};
+
+if (ggggggggggggggggggg==0) then
+{
+hint "Adding Vehicle Markers";
+ggggggggggggggggggg=1;
+VL = vehicles;
+j = count VL;
+i = 0;
+MV = true;
+
+while {MV} do
+{
+VL = vehicles;
+j = count VL;
+i = 0;
+
+for "i" from 0 to j do
+{
+veh = VL select i;
+deleteMarkerLocal ("VM"+ (str i));
+mk2 = "VM" + (str i);
+mk2 = createMarkerLocal [mk2,getPos veh];
+mk2 setMarkerTypeLocal "waypoint";
+mk2 setMarkerPosLocal (getPos veh);
+mk2 setMarkerColorLocal("ColorGreen");
+mk2 setMarkerTextLocal format ["%1",typeOf veh];
+};
+sleep 0.5;
+};
+}
+else
+{
+hint "VM Stopping";
+i = 0;
+MV = false;
+ggggggggggggggggggg=0;
+
+for "i" from 0 to j do
+{
+veh = VL select i;
+deleteMarkerLocal ("VM"+ (str i));
+};
+```
 
 ## Troll commands
+
+### Teleport player, or player(s) into the air.
+```sqf
+//Will teleport player, or all active players into the air based on set number.
+_pos = getPosATL player; _pos set [2, 700]; player setPosATL _pos; player spawn bis_fnc_halo;
+```
 
 ### Rooster Head.
 ```sqf
@@ -69,6 +179,11 @@ _dog = createAgent ["Fin_random_F", getPos player, [], 5, "CAN_COLLIDE"];
 ```sqf
 //Creates Sea Turtle at player or players location.
 " Turtle_F" createVehicle position player;
+```
+### Attaches GBU to Players.
+```sqf
+//This will attach bombs to player, or players. (Not tested if they explode)
+_expl1 = "Bo_GBU12_LGB" createVehicle position player; _expl1 attachTo [player, [-0.1, 0.1, 0.15], "Pelvis"]; _expl1 setVectorDirAndUp [ [0.5, 0.5, 0], [-0.5, 0.5, 0] ]; _expl2 = "Bo_GBU12_LGB" createVehicle position player; _expl2 attachTo [player, [0, 0.15, 0.15], "Pelvis"]; _expl2 setVectorDirAndUp [ [1, 0, 0], [0, 1, 0] ]; _expl3 = "Bo_GBU12_LGB" createVehicle position player; _expl3 attachTo [player, [0.1, 0.1, 0.15], "Pelvis"]; _expl3 setVectorDirAndUp [ [0.5, -0.5, 0], [0.5, 0.5, 0] ];
 ```
 ### Camera Shake.
 ```sqf
