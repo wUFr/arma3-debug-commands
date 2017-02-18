@@ -37,7 +37,7 @@ player addEventhandler ["Respawn", {player enableFatigue false}];
 ### Troll commands
 
 ```sqf
-## Rooster Head. 
+### Rooster Head. 
 //Attach "Cock" to player, or players head
  _expl1 = "Cock_random_F" createVehicle position player; _expl1 attachTo [player, [-0.1, 0.1, 0.15], "Head"]; _expl1 setVectorDirAndUp [ [0.5, 0.5, 0], [-0.5, 0.5, 0] ]; 
  ```
