@@ -34,7 +34,7 @@ player enableFatigue false;
 player addEventhandler ["Respawn", {player enableFatigue false}];
 ```
 
-### Troll commands
+## Troll commands
 
 ### Rooster Head.
 ```sqf
