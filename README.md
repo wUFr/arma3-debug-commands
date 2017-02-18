@@ -15,8 +15,10 @@ Usable debug commands for server admins
 
 ## Weather and time
 
+### Skip Time
 ```sqf
-// NOTHING YET
+// Skip time per hour. "5" = Hours (Server side)
+skipTime 5; 
 ```
 
 ## Others
@@ -30,6 +32,11 @@ player setdamage 1
 ```sqf
 // Removes player, or player(s) Weapons.
 removeAllWeapons player;
+```
+### Destory Targets
+```sqf
+//Will Destory whatever object at crosshair.
+cursortarget setdamage 1
 ```
 
 ### Disable fatique (without ACE loaded)
