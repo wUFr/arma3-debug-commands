@@ -11,8 +11,10 @@ deleteVehicle cursorTarget
 
 ## Entity spawning
 
+### Creating Vehicles
 ```sqf
-// NOTHING YET
+// Will spawn vechicle at player, or player(s) location. "C_Offroad" = cfg name.
+_veh = "C_Offroad_01_F" createVehicle position player;
 ```
 
 ## Weather and time
